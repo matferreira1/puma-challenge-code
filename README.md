@@ -1,1 +1,1 @@
-# puma-challenge-code
+# puma-code-challenge

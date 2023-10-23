@@ -21,6 +21,7 @@ module.exports = {
                         username: user.name,
                         photo: user.avatar_url,
                         urlProfile: user.html_url,
+                        bio: user.bio,
                     }
                   favorites.push(favoriteUser);
                   response.send(`

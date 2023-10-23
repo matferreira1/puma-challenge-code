@@ -1,5 +1,5 @@
 <template>
-  <nav>
+  <nav class="navbar">
     <img alt="Github logo" class="logo" src="../src/assets/logo.png" />
     <div class="title">
       <h1>Usuários Favoritos</h1>
@@ -34,7 +34,7 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
+  color: white;
   background-color: #0A0C10;
   height: 100%;
   display: flex;
@@ -44,6 +44,10 @@ export default {
   float: left;
   margin-left: 50px;
   color: white;
+}
+.navbar {
+  background-color: #1f2833;
+  
 }
 .search-bar {
   float: right;
@@ -60,8 +64,8 @@ export default {
 
 .search-bar button {
   padding: 5px 10px;
-  background-color: #2c5542;
-  color: white;
+  background-color: white;
+  color: bla;
   border: none;
   border-radius: 3px;
   cursor: pointer;
@@ -84,7 +88,7 @@ nav {
 
 nav a {
   font-weight: bold;
-  color: #2c3e50;
+  color: #4a5764;
 }
 
 nav a.router-link-exact-active {

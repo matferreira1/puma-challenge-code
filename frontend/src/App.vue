@@ -5,24 +5,34 @@
       <h1>Usuários Favoritos</h1>
     </div>
     <div class="search-bar">
-      <input type="text" placeholder="Pesquisar..." />
-      <button @click="pesquisar">Pesquisar</button>
+      <input type="text" v-model="searchTerm" placeholder="Pesquisar usuário do GitHub" />
+      <button @click="addUser">Favoritar</button>
     </div>
   </nav>
   <router-view />
 </template>
 
 <script>
+import api from './services/api';
+import HomeView from './views/HomeView.vue';
 export default {
   data() {
     return {
-      termoDePesquisa: '', 
+      searchTerm: "", 
     };
   },
   methods: {
-    pesquisar() {
-      console.log('Termo de pesquisa:' + this.termoDePesquisa);
-    },
+    addUser (){
+      api.post(`/users/${this.searchTerm}`)
+        .then((response) => {
+          console.log(response);
+          this.$refs.HomeView.fetchFavorites();
+        })
+        .catch((error) => {
+          console.error('Erro ao buscar favoritos:', error);
+        }); 
+    }
+    
   },
 
 };

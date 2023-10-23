@@ -8,7 +8,7 @@ module.exports = {
 
         //var username, user, photo, urlUser;
 
-        if (favorites.some((profile) => profile.user === name)){
+        if (favorites.some((profile) => profile.login === name)){
             response.status(400).json({ msg: 'This user is in the favorites already.' });
         }else{
             try{

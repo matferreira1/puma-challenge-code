@@ -12,7 +12,7 @@
           </div>
           <a :href="favorite.urlProfile" target="_blank" class="card-link">Ver Perfil</a>
           <fa icon="trash" class="image-buttons" @click="deleteUser(favorite.login)" />
-          <fa icon="star" class="image-buttons" @click="staredUser(favorite.login)" />
+          <fa icon="star" class="image-buttons" @click="starredUser(favorite.login)" :class="{ 'starred': favorite.starred}" />
         </div>
       </li>
     </ul>
@@ -31,13 +31,22 @@ export default {
     deleteUser(login){
       api.delete(`/users/${login}`)
         .then((response) => {
-          console.log(response);
           this.fetchFavorites();
         })
         .catch((error) => {
           console.error('Erro ao deletar favorito:', error);
         });
     },
+    starredUser(login){
+      const user = this.favorites.find((favorite) => favorite.login === login);
+      user.starred = !user.starred;
+      api.patch(`/users/${login}/toggle-star`)
+      .then((response) => {
+        this.fetchFavorites();
+      }).catch((error) => {
+        console.error('Erro ao estrelar usuário:', error);
+      });
+    }
     
     
   },
@@ -83,7 +92,9 @@ export default {
   padding: 10px;
   margin-right: 10px;
 }
-
+.starred {
+  color: #FFD700;
+}
 .avatar {
   width: 80px;
   height: 80px;

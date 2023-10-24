@@ -22,6 +22,7 @@ module.exports = {
                         photo: user.avatar_url,
                         urlProfile: user.html_url,
                         bio: user.bio,
+                        starred: false,
                     }
                   favorites.push(favoriteUser);
                   response.send(`
@@ -43,7 +44,11 @@ module.exports = {
             }
           },
     getFavorites(request, response) {
-        response.json(favorites)
+      const favoritesWithStarred = favorites.map((user) => ({
+        ...user,
+      }));
+    
+        response.json(favoritesWithStarred)
     },
     async deleteUser(request, response) {
         const { username } = request.params;
@@ -56,4 +61,18 @@ module.exports = {
           response.status(404).json({ msg: 'User not found in favorites' });
         }
       },
+    async toggleStar(request, response) {
+        const { username } = request.params;
+        const userIndex = favorites.findIndex((user) => user.login === username);
+        const userStarred = favorites.find((user) => user.starred === true);
+        if (userIndex !== -1) {
+          if (favorites[userIndex].starred === false && userStarred) {
+            userStarred.starred = false;
+          }
+          favorites[userIndex].starred = !favorites[userIndex].starred;
+          response.json(favorites[userIndex]);
+        } else {
+          response.status(404).json({ msg: 'User not found in favorites' });
+        }
+      }
 };        

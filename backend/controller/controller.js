@@ -5,11 +5,8 @@ const favorites = [];
 module.exports = {
     async create(request, response){
         const { name } = request.params;
-
-        //var username, user, photo, urlUser;
-
         if (favorites.some((profile) => profile.login === name)){
-            response.status(400).json({ msg: 'This user is in the favorites already.' });
+            response.json({ msg: 'This user is in the favorites already.' });
         }else{
             try{
                 const apiResponse = await axios.get('https://api.github.com/users/' + name);
@@ -25,11 +22,14 @@ module.exports = {
                         starred: false,
                     }
                   favorites.push(favoriteUser);
-                } else {
-                  response.status(400).json({ msg: 'The favorite list is full' });
+                  response.send();
+                }
+                else {
+                  response.json({ msg: 'The favorite list is full' });
+                  
                 }
               } catch (err) {
-                response.status(404).json({ msg: 'User not found', error: err.message });
+                response.json({ msg: 'User not found', error: err.message });
               }
             }
           },
@@ -46,9 +46,9 @@ module.exports = {
     
         if (userIndex !== -1) {
           favorites.splice(userIndex, 1);
-          response.status(204).send();
+          response.send();
         } else {
-          response.status(404).json({ msg: 'User not found in favorites' });
+          response.json({ msg: 'User not found in favorites' });
         }
       },
     async toggleStar(request, response) {
@@ -60,9 +60,9 @@ module.exports = {
             userStarred.starred = false;
           }
           favorites[userIndex].starred = !favorites[userIndex].starred;
-          response.json(favorites[userIndex]);
+          response.json(favorites[userIndex].starred);
         } else {
-          response.status(404).json({ msg: 'User not found in favorites' });
+          response.json({ msg: 'User not found in favorites' });
         }
       }
 };        

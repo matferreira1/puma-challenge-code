@@ -1,22 +1,32 @@
 <template>
-  <div class="full-height">
+  <v-app class="full-height">
     <nav class="navbar">
       <img alt="Github logo" class="logo" src="../assets/logo.png" />
-        <div class="title">
-          <h1>Usuários Favoritos</h1>
-        </div>
-      <button class="order-button" @click="orderFavorites">Ordenar</button>
-      <div class="search-bar">
-        <input type="text" v-model="searchTerm" placeholder="Pesquisar usuário do GitHub" />
-        <button @click="addUser">Favoritar</button>
+      <div class="title">
+        <h1>Usuários Favoritos</h1>
       </div>
-      <div v-if ="error" class="error-message" @click="clearError">{{ error }}</div>
+      <button class="order-button" @click="orderFavorites"> Ordenar </button>
+      <div class="search-bar">
+        <input
+          type="text"
+          v-model="searchTerm"
+          placeholder="Pesquisar usuário do GitHub"
+        />
+        <button @click="addUser"> Favoritar </button>
+      </div>
+      <div v-if="error" class="error-message" @click="clearError">
+        {{ error }}
+      </div>
     </nav>
     <v-container class="user-list">
-      <v-row v-for="favorite in favorites" :key="favorite.login" class="user-card">
-        <div class="card">
+      <v-row
+        v-for="favorite in favorites"
+        :key="favorite.login"
+        class="user-card"
+      >
+        <v-card class="card">
           <v-col>
-            <img :src="favorite.photo" alt="Avatar" class="avatar">
+            <img :src="favorite.photo" alt="Avatar" class="avatar" />
           </v-col>
           <v-col class="card-body">
             <h3 class="card-title">Usuário: {{ favorite.login }}</h3>
@@ -25,39 +35,50 @@
             <p class="card-text">Nome: {{ favorite.username }}</p>
           </v-col>
           <v-col class="card-link">
-            <a :href="favorite.urlProfile" target="_blank" class="card-link">Ver Perfil</a>
+            <a :href="favorite.urlProfile" target="_blank" class="card-link"
+              >Ver Perfil</a
+            >
           </v-col>
           <v-col>
-            <fa icon="trash" class="image-buttons" @click="deleteUser(favorite.login)" />
+            <fa
+              icon="trash"
+              class="image-buttons"
+              @click="deleteUser(favorite.login)"
+            />
           </v-col>
           <v-col>
-            <fa icon="star" class="image-buttons" @click="starredUser(favorite.login)" :class="{ 'starred': favorite.starred}" />
+            <fa
+              icon="star"
+              class="image-buttons"
+              @click="starredUser(favorite.login)"
+              :class="{ starred: favorite.starred }"
+            />
           </v-col>
-        </div>
+        </v-card>
       </v-row>
     </v-container>
-  </div>
+  </v-app>
 </template>
-
 
 <script>
 import api from "@/services/api";
-import { ref,onMounted } from "vue";
+import { ref, onMounted } from "vue";
+import 'vuetify/dist/vuetify.min.css'
 
 
 export default {
   name: "HomeView",
   data() {
     return {
-      searchTerm: "", 
+      searchTerm: "",
       error: null,
     };
   },
   methods: {
     clearError() {
-    this.error = null;
+      this.error = null;
     },
-    orderFavorites(){
+    orderFavorites() {
       this.favorites.sort((a, b) => {
         if (a.username < b.username) {
           return -1;
@@ -68,56 +89,60 @@ export default {
         return 0;
       });
     },
-    addUser (){
-      api.post(`/users/${this.searchTerm}`)
-        .then((response) => {
+    addUser() {
+      api
+        .post(`/users/${this.searchTerm}`)
+        .then(() => {
           this.fetchFavorites();
         })
-        .catch((error) => {
-          this.error = 'Erro ao adicionar usuário, máximo de 5 ';
-        }); 
-    },
-    deleteUser(login){
-      api.delete(`/users/${login}`)
-        .then((response) => {
-          this.fetchFavorites();
-        })
-        .catch((error) => {
-          this.error = 'Erro ao deletar usuário ';
+        .catch(() => {
+          this.error = "Erro ao adicionar usuário";
         });
     },
-    starredUser(login){
+    deleteUser(login) {
+      api
+        .delete(`/users/${login}`)
+        .then(() => {
+          this.fetchFavorites();
+        })
+        .catch(() => {
+          this.error = "Erro ao deletar usuário ";
+        });
+    },
+    starredUser(login) {
       const user = this.favorites.find((favorite) => favorite.login === login);
       user.starred = !user.starred;
-      api.patch(`/users/${login}/toggle-star`)
-      .then((response) => {
-        this.fetchFavorites();
-      }).catch((error) => {
-        this.error = 'Erro ao estrelar usuário';
-      });
-    }
-    
-    
+      api
+        .patch(`/users/${login}/toggle-star`)
+        .then(() => {
+          this.fetchFavorites();
+        })
+        .catch(() => {
+          this.error = "Erro ao estrelar usuário";
+        });
+    },
   },
   created() {
-    document.addEventListener('click', this.clearError);
+    document.addEventListener("click", this.clearError);
   },
-  beforeDestroy() {
+  beforeUnmount() {
     document.removeEventListener("click", this.clearError);
   },
 
-  setup(){
+  setup() {
     const favorites = ref([]);
-    const fetchFavorites = () => api.get("/users", { headers: { "Cache-Control": "no-cache" } }).then((response) => {
-      favorites.value = response.data;
-    })
-    .catch((error) => {
-      this.error = 'Erro ao buscar usuários favoritos ';
-    });
+    const fetchFavorites = () =>
+      api
+        .get("/users", { headers: { "Cache-Control": "no-cache" } })
+        .then((response) => {
+          favorites.value = response.data;
+        })
+        .catch(() => {
+          this.error = "Erro ao buscar usuários favoritos ";
+        });
 
     onMounted(fetchFavorites);
-  
-  
+
     return {
       favorites,
       fetchFavorites,
@@ -132,10 +157,13 @@ export default {
   font-weight: bold;
   margin: auto;
 }
-.usernames{
+.usernames {
   color: white;
 }
-.order-button{
+.order-button {
+  width: 70px;
+  background-color: white;
+  color: #0a0c10;
   margin-top: 20px;
   margin-right: 500px;
 }
@@ -145,12 +173,12 @@ export default {
 }
 .full-height {
   display: flex;
-  justify-content: center; 
+  justify-content: center;
 }
 .card {
   display: flex;
   margin: 10px;
-  width: 700px; 
+  width: 700px;
   border: 1px solid #ccc;
   border-radius: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -158,7 +186,7 @@ export default {
   margin-right: 10px;
 }
 .starred {
-  color: #FFD700;
+  color: #ffd700;
 }
 .avatar {
   width: 80px;
@@ -180,14 +208,14 @@ export default {
   font-size: 18px;
   margin: 0;
 }
-.image-buttons{
+.image-buttons {
   margin-right: 5px;
 }
 
 .card-link {
   margin-top: auto;
   margin-left: 20px;
-  color: #007BFF;
+  color: #007bff;
   text-decoration: none;
 }
 .card-text {
@@ -197,7 +225,7 @@ export default {
 .card-link:hover {
   text-decoration: underline;
 }
-.title{
+.title {
   float: left;
   margin-left: 50px;
   color: white;
@@ -207,13 +235,12 @@ export default {
   top: 0;
   left: 0;
   width: 100%;
-  background-color: #333; 
-  color: #fff; 
+  background-color: #333;
+  color: #fff;
   padding: 10px;
   z-index: 2;
-  
 }
-.user-list{
+.user-list {
   margin-top: 100px;
 }
 .search-bar {
@@ -232,13 +259,13 @@ export default {
 .search-bar button {
   padding: 5px 10px;
   background-color: white;
-  color: bla;
+  color: black;
   border: none;
   border-radius: 3px;
   cursor: pointer;
 }
 
-.logo{
+.logo {
   width: 50px;
   height: auto;
   margin: 5px;
@@ -250,7 +277,7 @@ export default {
 }
 nav {
   padding: 30px;
-  overflow: hidden; 
+  overflow: hidden;
 }
 
 nav a {
@@ -262,6 +289,6 @@ nav a.router-link-exact-active {
   color: #42b983;
 }
 html {
-  background-color:  #0A0C10; 
+  background-color: #0a0c10;
 }
 </style>

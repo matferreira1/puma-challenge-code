@@ -1,10 +1,8 @@
 <template>
-  
   <router-view />
 </template>
 
-<script>
-</script>
+<script></script>
 
 <style>
 #app {
@@ -13,10 +11,9 @@
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: white;
-  background-color: #0A0C10;
+  background-color: #0a0c10;
   height: 100%;
   display: flex;
   flex-direction: column;
 }
-
 </style>

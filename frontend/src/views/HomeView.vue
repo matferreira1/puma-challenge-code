@@ -11,6 +11,8 @@
             <p class="card-text">Nome: {{ favorite.username }}</p>
           </div>
           <a :href="favorite.urlProfile" target="_blank" class="card-link">Ver Perfil</a>
+          <fa icon="trash" class="image-buttons" @click="deleteUser(favorite.login)" />
+          <fa icon="star" class="image-buttons" @click="staredUser(favorite.login)" />
         </div>
       </li>
     </ul>
@@ -25,9 +27,23 @@ import { ref,onMounted } from "vue";
 
 export default {
   name: "HomeView",
+  methods: {
+    deleteUser(login){
+      api.delete(`/users/${login}`)
+        .then((response) => {
+          console.log(response);
+          this.fetchFavorites();
+        })
+        .catch((error) => {
+          console.error('Erro ao deletar favorito:', error);
+        });
+    },
+    
+    
+  },
   setup(){
     const favorites = ref([]);
-    const fetchFavorites = () => api.get("/users").then((response) => {
+    const fetchFavorites = () => api.get("/users", { headers: { "Cache-Control": "no-cache" } }).then((response) => {
       favorites.value = response.data;
     })
     .catch((error) => {
@@ -38,6 +54,7 @@ export default {
 
     return {
       favorites,
+      fetchFavorites,
     };
   },
 };
@@ -86,6 +103,9 @@ export default {
   margin-left: 20px;
   font-size: 18px;
   margin: 0;
+}
+.image-buttons{
+  margin-right: 5px;
 }
 
 .card-link {

@@ -26,7 +26,6 @@ export default {
       api.post(`/users/${this.searchTerm}`)
         .then((response) => {
           console.log(response);
-          this.$refs.HomeView.fetchFavorites();
         })
         .catch((error) => {
           console.error('Erro ao buscar favoritos:', error);

@@ -25,16 +25,6 @@ module.exports = {
                         starred: false,
                     }
                   favorites.push(favoriteUser);
-                  response.send(`
-                    <html>
-                        <head></head>
-                            <body>
-                                <h1>${favoriteUser.name}</h1>
-                                <img src="${favoriteUser.avatar_url}" />
-                                <h2><a href="${favoriteUser.html_url}">${favoriteUser.html_url}</a></h2>
-                            </body>
-                    </html>
-                    `);
                 } else {
                   response.status(400).json({ msg: 'The favorite list is full' });
                 }

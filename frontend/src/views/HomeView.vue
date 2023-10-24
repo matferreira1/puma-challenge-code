@@ -5,10 +5,12 @@
         <div class="title">
           <h1>Usuários Favoritos</h1>
         </div>
+      <button class="order-button" @click="orderFavorites">Ordenar</button>
       <div class="search-bar">
         <input type="text" v-model="searchTerm" placeholder="Pesquisar usuário do GitHub" />
         <button @click="addUser">Favoritar</button>
       </div>
+      <div v-if ="error" class="error-message" @click="clearError">{{ error }}</div>
     </nav>
     <v-container class="user-list">
       <v-row v-for="favorite in favorites" :key="favorite.login" class="user-card">
@@ -48,16 +50,31 @@ export default {
   data() {
     return {
       searchTerm: "", 
+      error: null,
     };
   },
   methods: {
+    clearError() {
+    this.error = null;
+    },
+    orderFavorites(){
+      this.favorites.sort((a, b) => {
+        if (a.username < b.username) {
+          return -1;
+        }
+        if (a.username > b.username) {
+          return 1;
+        }
+        return 0;
+      });
+    },
     addUser (){
       api.post(`/users/${this.searchTerm}`)
         .then((response) => {
           this.fetchFavorites();
         })
         .catch((error) => {
-          console.error('Erro ao buscar favoritos:', error);
+          this.error = 'Erro ao adicionar usuário, máximo de 5 ';
         }); 
     },
     deleteUser(login){
@@ -66,7 +83,7 @@ export default {
           this.fetchFavorites();
         })
         .catch((error) => {
-          console.error('Erro ao deletar favorito:', error);
+          this.error = 'Erro ao deletar usuário ';
         });
     },
     starredUser(login){
@@ -76,23 +93,31 @@ export default {
       .then((response) => {
         this.fetchFavorites();
       }).catch((error) => {
-        console.error('Erro ao estrelar usuário:', error);
+        this.error = 'Erro ao estrelar usuário';
       });
     }
     
     
   },
+  created() {
+    document.addEventListener('click', this.clearError);
+  },
+  beforeDestroy() {
+    document.removeEventListener("click", this.clearError);
+  },
+
   setup(){
     const favorites = ref([]);
     const fetchFavorites = () => api.get("/users", { headers: { "Cache-Control": "no-cache" } }).then((response) => {
       favorites.value = response.data;
     })
     .catch((error) => {
-          console.error("Erro ao buscar favoritos:", error);
+      this.error = 'Erro ao buscar usuários favoritos ';
     });
 
     onMounted(fetchFavorites);
-
+  
+  
     return {
       favorites,
       fetchFavorites,
@@ -102,8 +127,17 @@ export default {
 </script>
 
 <style>
+.error-message {
+  color: red;
+  font-weight: bold;
+  margin: auto;
+}
 .usernames{
   color: white;
+}
+.order-button{
+  margin-top: 20px;
+  margin-right: 500px;
 }
 .user-card {
   list-style: none;
